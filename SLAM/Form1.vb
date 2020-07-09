@@ -316,16 +316,18 @@ Public Class Form1
                 trimmed = "Yes"
             End If
 
-            TrackList.Items.Add(New ListViewItem({"False", Track.name, Track.hotkey, Track.volume & "%", trimmed, """" & String.Join(""", """, Track.tags) & """"}))
+            Dim index As String = Game.tracks.IndexOf(Track) + 1 'for TrackIndexCol
+            TrackList.Items.Add(New ListViewItem({index, "False", Track.name, Track.hotkey, Track.volume & "%", trimmed, """" & String.Join(""", """, Track.tags) & """"}))
         Next
 
 
         TrackList.AutoResizeColumn(0, ColumnHeaderAutoResizeStyle.HeaderSize)
-        TrackList.AutoResizeColumn(1, ColumnHeaderAutoResizeStyle.ColumnContent)
-        TrackList.AutoResizeColumn(2, ColumnHeaderAutoResizeStyle.HeaderSize)
+        TrackList.AutoResizeColumn(1, ColumnHeaderAutoResizeStyle.HeaderSize)
+        TrackList.AutoResizeColumn(2, ColumnHeaderAutoResizeStyle.ColumnContent)
         TrackList.AutoResizeColumn(3, ColumnHeaderAutoResizeStyle.HeaderSize)
         TrackList.AutoResizeColumn(4, ColumnHeaderAutoResizeStyle.HeaderSize)
-        TrackList.AutoResizeColumn(5, ColumnHeaderAutoResizeStyle.ColumnContent)
+        TrackList.AutoResizeColumn(5, ColumnHeaderAutoResizeStyle.HeaderSize)
+        TrackList.AutoResizeColumn(6, ColumnHeaderAutoResizeStyle.ColumnContent)
     End Sub
 
     Private Sub StartButton_Click(sender As Object, e As EventArgs) Handles StartButton.Click
@@ -486,13 +488,13 @@ Public Class Form1
 
                     Dim GameCfgFolder As String = Path.Combine(SteamAppsPath, Game.directory, Game.ToCfg)
                     Using slam_curtrack As StreamWriter = New StreamWriter(GameCfgFolder & "slam_curtrack.cfg")
-                        slam_curtrack.WriteLine("echo ""[SLAM] Track name: {0}""", Track.name)
+                        slam_curtrack.WriteLine("echo ""Track name: {0}""", Track.name)
                     End Using
                     Using slam_saycurtrack As StreamWriter = New StreamWriter(GameCfgFolder & "slam_saycurtrack.cfg")
-                        slam_saycurtrack.WriteLine("say ""[SLAM] Track name: {0}""", Track.name)
+                        slam_saycurtrack.WriteLine("say ""Track name: {0}""", Track.name)
                     End Using
                     Using slam_sayteamcurtrack As StreamWriter = New StreamWriter(GameCfgFolder & "slam_sayteamcurtrack.cfg")
-                        slam_sayteamcurtrack.WriteLine("say_team ""[SLAM] Track name: {0}""", Track.name)
+                        slam_sayteamcurtrack.WriteLine("say_team ""Track name: {0}""", Track.name)
                     End Using
 
 
@@ -693,16 +695,12 @@ Public Class Form1
 
         Dim index As Integer
         For Each Track In Game.tracks
-            Dim Words As List(Of String) = Track.name.Split({" "c, "."c, "-"c, "_"c}).ToList
+            Dim Words As List(Of String) = Track.name.Split({" "c, "."c, "-"c, "_"c, "("c, ")"c, "!"c, "@"c, "#"c, "$"c, "^"c, "&"c, "*"c, "["c, "]"c}).ToList
 
             For Each Word In Words
 
-                If Not IsNumeric(Word) And Not Game.blacklist.Contains(Word.ToLower) And Word.Length < 32 Then
-                    If NameWords.ContainsKey(Word) Then
-                        NameWords.Remove(Word)
-                    Else
-                        NameWords.Add(Word, index)
-                    End If
+                If Not IsNumeric(Word) And Not Game.blacklist.Contains(Word.ToLower) And Word.Length < 32 And Not NameWords.ContainsKey(Word.ToLower) Then
+                    NameWords.Add(Word.ToLower, index)
                 End If
 
             Next
@@ -728,9 +726,9 @@ Public Class Form1
 
     Private Sub DisplayLoaded(ByVal track As Integer)
         For i As Integer = 0 To TrackList.Items.Count - 1
-            TrackList.Items(i).SubItems(0).Text = "False"
+            TrackList.Items(i).SubItems(1).Text = "False"
         Next
-        TrackList.Items(track).SubItems(0).Text = "True"
+        TrackList.Items(track).SubItems(1).Text = "True"
     End Sub
 
     Private Sub LoadTrackKeys(ByVal Game As SourceGame)
@@ -825,10 +823,10 @@ Public Class Form1
     End Sub
 
     Private Sub TrackList_MouseDoubleClick(sender As Object, e As MouseEventArgs) Handles TrackList.MouseDoubleClick
-        Const TRACK = 1
-        Const BIND = 2
-        Const VOLUME = 3
-        Const TRIMMED = 4
+        Const TRACK = 2
+        Const BIND = 3
+        Const VOLUME = 4
+        Const TRIMMED = 5
 
         If TrackList.FocusedItem.Bounds.Contains(e.Location) Then
 
@@ -868,7 +866,7 @@ Public Class Form1
 
         Dim SelectedNames As New List(Of String)
         For Each item In TrackList.SelectedItems
-            SelectedNames.Add(item.SubItems(1).Text)
+            SelectedNames.Add(item.SubItems(2).Text)
         Next
 
         If MessageBox.Show(String.Format("Are you sure you want to delete {0}?", String.Join(", ", SelectedNames)), "Delete Track?", MessageBoxButtons.YesNo) = Windows.Forms.DialogResult.Yes Then

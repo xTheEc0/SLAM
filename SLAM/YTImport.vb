@@ -54,7 +54,13 @@ Public Class YTImport
         Catch ex As Exception
             Form1.LogError(ex)
 
-            e.Result = ex
+            If ex.Message = "Sequence contains no elements" Then
+                Dim localEx = New Exception("Video possibly age restriced.")
+                e.Result = localEx
+            Else
+                e.Result = ex
+            End If
+
         End Try
     End Sub
 

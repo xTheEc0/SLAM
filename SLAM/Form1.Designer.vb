@@ -28,6 +28,7 @@ Partial Class Form1
         Me.Label1 = New System.Windows.Forms.Label()
         Me.ImportButton = New System.Windows.Forms.Button()
         Me.TrackList = New System.Windows.Forms.ListView()
+        Me.TrackIndexCol = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         Me.LoadedCol = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         Me.TrackCol = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         Me.HotKeyCol = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
@@ -100,7 +101,7 @@ Partial Class Form1
             Or System.Windows.Forms.AnchorStyles.Left) _
             Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.TrackList.AutoArrange = False
-        Me.TrackList.Columns.AddRange(New System.Windows.Forms.ColumnHeader() {Me.LoadedCol, Me.TrackCol, Me.HotKeyCol, Me.VolumeCol, Me.Trimmed, Me.TagsCol})
+        Me.TrackList.Columns.AddRange(New System.Windows.Forms.ColumnHeader() {Me.TrackIndexCol, Me.LoadedCol, Me.TrackCol, Me.HotKeyCol, Me.VolumeCol, Me.Trimmed, Me.TagsCol})
         Me.TrackList.FullRowSelect = True
         Me.TrackList.HideSelection = False
         Me.TrackList.ImeMode = System.Windows.Forms.ImeMode.Off
@@ -110,6 +111,10 @@ Partial Class Form1
         Me.TrackList.TabIndex = 4
         Me.TrackList.UseCompatibleStateImageBehavior = False
         Me.TrackList.View = System.Windows.Forms.View.Details
+        '
+        'TrackIndexCol
+        '
+        Me.TrackIndexCol.Text = "Index"
         '
         'LoadedCol
         '
@@ -371,4 +376,5 @@ Partial Class Form1
     Friend WithEvents ToolStripSeparator1 As ToolStripSeparator
     Friend WithEvents SystemTrayMenu_Exit As ToolStripMenuItem
     Friend WithEvents YTButton As Button
+    Friend WithEvents TrackIndexCol As ColumnHeader
 End Class
